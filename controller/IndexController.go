@@ -1,13 +1,16 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	"go-gin-chat/services/helper"
 	"go-gin-chat/services/message_service"
 	"go-gin-chat/services/user_service"
 	"go-gin-chat/ws/primary"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func Index(c *gin.Context) {
@@ -61,6 +64,14 @@ func Room(c *gin.Context) {
 	}
 
 	userInfo := user_service.GetUserInfo(c)
+	auth := viper.GetString(fmt.Sprintf("room_id%s.user_ids", roomId))
+	if len(auth) != 0 {
+		if !strings.Contains(auth, userInfo["uid"].(string)) {
+			c.Redirect(http.StatusFound, "/room/1")
+			return
+		}
+	}
+
 	msgList := message_service.GetLimitMsg(roomId, 0)
 
 	c.HTML(http.StatusOK, "room.html", gin.H{

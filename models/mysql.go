@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -8,9 +9,10 @@ import (
 
 var ChatDB *gorm.DB
 
-func InitDB()  {
+func InitDB() {
 	// 参考 https://github.com/go-sql-driver/mysql#dsn-data-source-name 获取详情
-	dsn := viper.GetString(`mysql.dsn`)
+	dsn := viper.GetString(`mysql.dns`)
+	fmt.Println("dsn:", dsn)
 	ChatDB, _ = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	return
 }
